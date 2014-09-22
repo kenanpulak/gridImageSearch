@@ -1,15 +1,17 @@
 package com.kenanpulak.gridimagesearch.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 
 import com.kenanpulak.gridimagesearch.R;
+import com.kenanpulak.gridimagesearch.adapters.ImageResultsAdapter;
 import com.kenanpulak.gridimagesearch.models.ImageResult;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -27,19 +29,38 @@ public class SearchActivity extends Activity {
     private EditText etQuery;
     private GridView gvResults;
     private ArrayList<ImageResult> imageResults;
+    private ImageResultsAdapter aImageResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setupViews();
+        //Creates the data sourcs
         imageResults = new ArrayList<ImageResult>();
-
+        // Attaches the data source to an adapter
+        aImageResults = new ImageResultsAdapter(this,imageResults);
+        // Link the adapter to the adapterView (gridView)
+        gvResults.setAdapter(aImageResults);
     }
 
     private void setupViews(){
         etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Launch the image display activity
+                // Creating an intent
+                Intent i = new Intent(SearchActivity.this,ImageDisplayActivity.class);
+                // Get the image result to display
+                ImageResult result = imageResults.get(position);
+                // Pass image result into the intent
+                i.putExtra("result",result);
+                //Launch the new activity
+                startActivity(i);
+            }
+        });
     }
 
     @Override
@@ -74,14 +95,11 @@ public class SearchActivity extends Activity {
                 try {
                     imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
                     imageResults.clear(); // clear the existing images from the array when theres a new search
-                    imageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
-
+                    aImageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
                 }
                 catch (JSONException e){
                     e.printStackTrace();
                 }
-                Log.i("INFO",imageResults.toString());
-                
             }
         });
     }
