@@ -10,10 +10,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Toast;
 
-import com.kenanpulak.gridimagesearch.R;
 import com.kenanpulak.gridimagesearch.FilterFragment;
+import com.kenanpulak.gridimagesearch.FilterFragment.FilterDialogListener;
+import com.kenanpulak.gridimagesearch.R;
 import com.kenanpulak.gridimagesearch.adapters.ImageResultsAdapter;
+import com.kenanpulak.gridimagesearch.models.Filter;
 import com.kenanpulak.gridimagesearch.models.ImageResult;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -26,19 +29,23 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends FragmentActivity implements FilterDialogListener{
 
     private EditText etQuery;
     private GridView gvResults;
     private ArrayList<ImageResult> imageResults;
     private ImageResultsAdapter aImageResults;
+    private Filter searchFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         setupViews();
-        //Creates the data sourcs
+
+        searchFilter = new Filter();
+
+        //Creates the data source
         imageResults = new ArrayList<ImageResult>();
         // Attaches the data source to an adapter
         aImageResults = new ImageResultsAdapter(this,imageResults);
@@ -98,6 +105,9 @@ public class SearchActivity extends FragmentActivity {
     private void showFilterFragment() {
         FragmentManager fm = getSupportFragmentManager();
         FilterFragment filterFragment = FilterFragment.newInstance("Filter");
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("filter",searchFilter);
+        filterFragment.setArguments(bundle);
         filterFragment.show(fm, "fragment_filter");
     }
 
@@ -106,7 +116,27 @@ public class SearchActivity extends FragmentActivity {
         String query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
         String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ query +"&rsz=8";
-        client.get(searchURL, new JsonHttpResponseHandler(){
+
+        StringBuilder s = new StringBuilder(100);
+        s.append(searchURL);
+        if (searchFilter.size != null){
+            s.append("&imgsz=");
+            s.append(searchFilter.size);
+        }
+        if (searchFilter.color != null){
+            s.append("&imgcolor=");
+            s.append(searchFilter.color);
+        }
+        if (searchFilter.type != null){
+            s.append("&imgtype=");
+            s.append(searchFilter.type);
+        }
+        if (searchFilter.site != null){
+            s.append("&as_sitesearch=");
+            s.append(searchFilter.site);
+        }
+
+        client.get(s.toString(), new JsonHttpResponseHandler(){
             @Override
         public void onSuccess(int statusCode, Header[] headers,JSONObject response){
 
@@ -121,6 +151,13 @@ public class SearchActivity extends FragmentActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onFinishFilterDialog(Filter filter)
+    {
+        searchFilter = filter;
+        Toast.makeText(this, searchFilter.size + " " + searchFilter.color + " " + searchFilter.type + " " + searchFilter.site, Toast.LENGTH_SHORT).show();
     }
 
 }
