@@ -1,6 +1,6 @@
-# Instagram Photo Viewer
+# Grid Image Search
 
-Overview: Build a read-only photo viewer for Instagram which allows a user to check out popular photos.
+Overview: Build a Google Image Search app which allows a user to select search filters and paginate results infinitely.
 
 Time spent: 6 hours spent in total
 
