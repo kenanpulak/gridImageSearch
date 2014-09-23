@@ -1,8 +1,9 @@
 package com.kenanpulak.gridimagesearch.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 
 import com.kenanpulak.gridimagesearch.R;
+import com.kenanpulak.gridimagesearch.FilterFragment;
 import com.kenanpulak.gridimagesearch.adapters.ImageResultsAdapter;
 import com.kenanpulak.gridimagesearch.models.ImageResult;
 import com.loopj.android.http.AsyncHttpClient;
@@ -24,7 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends FragmentActivity {
 
     private EditText etQuery;
     private GridView gvResults;
@@ -80,6 +82,23 @@ public class SearchActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onFilterAction(MenuItem mi) {
+       /* // Create the intent
+        Intent i = new Intent(this,CreationActivity.class);
+        // Define the parameters (extras)
+        i.putExtra(DEFAULT_DOLLAR_EXTRA, 50);
+        i.putExtra(DEFAULT_NOTE_EXTRA, "Food");
+        //Execute my intent
+        startActivityForResult(i, 50);*/
+        showFilterFragment();
+    }
+
+    private void showFilterFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        FilterFragment filterFragment = FilterFragment.newInstance("Filter");
+        filterFragment.show(fm, "fragment_filter");
     }
 
     // Fired whenever the button is pressed

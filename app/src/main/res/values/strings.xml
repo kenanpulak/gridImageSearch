@@ -9,5 +9,8 @@
     <string name="image_title">Image Title</string>
     <string name="image_content_description">Image Result</string>
     <string name="title_activity_image_display">Full Image</string>
+    <string name="sizes_prompt">Sizes</string>
+    <string name="type_prompt">Type</string>
+    <string name="color_prompt">Color</string>
 
 </resources>
