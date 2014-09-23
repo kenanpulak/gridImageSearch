@@ -13,9 +13,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 
-import com.kenanpulak.gridimagesearch.EndlessScrollListener;
-import com.kenanpulak.gridimagesearch.FilterFragment;
-import com.kenanpulak.gridimagesearch.FilterFragment.FilterDialogListener;
+import com.kenanpulak.gridimagesearch.listeners.EndlessScrollListener;
+import com.kenanpulak.gridimagesearch.fragments.FilterFragment;
+import com.kenanpulak.gridimagesearch.fragments.FilterFragment.FilterDialogListener;
 import com.kenanpulak.gridimagesearch.R;
 import com.kenanpulak.gridimagesearch.adapters.ImageResultsAdapter;
 import com.kenanpulak.gridimagesearch.models.Filter;

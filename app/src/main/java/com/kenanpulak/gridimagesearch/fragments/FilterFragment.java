@@ -1,4 +1,4 @@
-package com.kenanpulak.gridimagesearch;
+package com.kenanpulak.gridimagesearch.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
+import com.kenanpulak.gridimagesearch.R;
 import com.kenanpulak.gridimagesearch.models.Filter;
 
 

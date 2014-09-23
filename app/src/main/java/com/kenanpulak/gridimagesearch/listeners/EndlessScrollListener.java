@@ -1,4 +1,4 @@
-package com.kenanpulak.gridimagesearch;
+package com.kenanpulak.gridimagesearch.listeners;
 
 import android.widget.AbsListView;
 
