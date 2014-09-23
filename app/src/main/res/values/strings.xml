@@ -12,5 +12,6 @@
     <string name="sizes_prompt">Sizes</string>
     <string name="type_prompt">Type</string>
     <string name="color_prompt">Color</string>
+    <string name="share_prompt">Share</string>
 
 </resources>

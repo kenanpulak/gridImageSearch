@@ -18,7 +18,10 @@ Completed user stories:
 
 
 * [x] Advanced: Replace Filter Settings Activity with a lightweight modal overlay
+* [x] Advanced: Use the ActionBar SearchView or custom layout as the query box instead of an EditText
+
+* [x] Bonus: User can zoom or pan images displayed in full-screen detail view
 
 # Walkthrough of all user stories:
 
-![Video Walkthrough](walkthrough.gif)
+![Video Walkthrough](gridImageDemo.gif)

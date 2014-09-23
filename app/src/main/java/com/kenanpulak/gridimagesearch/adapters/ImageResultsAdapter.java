@@ -1,13 +1,11 @@
 package com.kenanpulak.gridimagesearch.adapters;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.kenanpulak.gridimagesearch.R;
 import com.kenanpulak.gridimagesearch.models.ImageResult;
@@ -32,11 +30,11 @@ public class ImageResultsAdapter extends ArrayAdapter<ImageResult>{
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_image_result,parent,false);
         }
         ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivImage);
-        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+        //TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
         //clear out image from last time
         ivImage.setImageResource(0);
         //populate title and remote download the image url
-        tvTitle.setText(Html.fromHtml(imageInfo.title));
+        //tvTitle.setText(Html.fromHtml(imageInfo.title));
         // Remotely download the image data in the background (with Picasso)
         Picasso.with(getContext()).load(imageInfo.thumbURL).into(ivImage);
         // Return the complete view to be displayed
