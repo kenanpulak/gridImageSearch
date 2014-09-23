@@ -10,14 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.SearchView;
 
-import com.kenanpulak.gridimagesearch.listeners.EndlessScrollListener;
-import com.kenanpulak.gridimagesearch.fragments.FilterFragment;
-import com.kenanpulak.gridimagesearch.fragments.FilterFragment.FilterDialogListener;
 import com.kenanpulak.gridimagesearch.R;
 import com.kenanpulak.gridimagesearch.adapters.ImageResultsAdapter;
+import com.kenanpulak.gridimagesearch.fragments.FilterFragment;
+import com.kenanpulak.gridimagesearch.fragments.FilterFragment.FilterDialogListener;
+import com.kenanpulak.gridimagesearch.listeners.EndlessScrollListener;
 import com.kenanpulak.gridimagesearch.models.Filter;
 import com.kenanpulak.gridimagesearch.models.ImageResult;
 import com.loopj.android.http.AsyncHttpClient;
@@ -32,11 +32,12 @@ import java.util.ArrayList;
 
 public class SearchActivity extends FragmentActivity implements FilterDialogListener{
 
-    private EditText etQuery;
     private GridView gvResults;
     private ArrayList<ImageResult> imageResults;
     private ImageResultsAdapter aImageResults;
     private Filter searchFilter;
+    private SearchView mSearchView;
+    private String mSearchQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +70,8 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
         // This method probably sends out a network request and appends new data items to your adapter.
         // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
         // Deserialize API response and then construct new objects to append to the adapter
-        String query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
-        String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ query +"&rsz=8" + "&start=" + offset;
+        String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ mSearchQuery +"&rsz=8" + "&start=" + offset;
 
         StringBuilder s = new StringBuilder(100);
         s.append(searchURL);
@@ -111,7 +111,6 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
     }
 
     private void setupViews(){
-        etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -133,6 +132,22 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) searchItem.getActionView();
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mSearchQuery = query;
+                newSearch();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return true;
     }
 
@@ -161,18 +176,16 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
         filterFragment.show(fm, "fragment_filter");
     }
 
-    // Fired whenever the button is pressed
-    public void onImageSearch(View v){
+    public void newSearch(){
 
         aImageResults.clear();
 
-        String query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
-        String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ query +"&rsz=8";
+        String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ mSearchQuery +"&rsz=8";
 
         InputMethodManager imm = (InputMethodManager)getSystemService(
                 Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(etQuery.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(mSearchView.getWindowToken(), 0);
 
         StringBuilder s = new StringBuilder(100);
         s.append(searchURL);
@@ -195,7 +208,7 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
 
         client.get(s.toString(), new JsonHttpResponseHandler(){
             @Override
-        public void onSuccess(int statusCode, Header[] headers,JSONObject response){
+            public void onSuccess(int statusCode, Header[] headers,JSONObject response){
 
                 JSONArray imageResultsJson = null;
                 try {

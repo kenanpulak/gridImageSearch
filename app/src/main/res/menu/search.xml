@@ -7,4 +7,12 @@
         android:icon="@drawable/ic_gear"
         android:onClick="onFilterAction"
         android:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_search"
+        android:orderInCategory="5"
+        android:title="Search"
+        android:icon="@drawable/ic_action_search"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:actionViewClass="android.widget.SearchView" />
+
 </menu>

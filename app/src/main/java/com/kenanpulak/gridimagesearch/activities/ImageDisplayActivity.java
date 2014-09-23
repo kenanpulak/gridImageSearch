@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
 import com.kenanpulak.gridimagesearch.R;
+import com.kenanpulak.gridimagesearch.TouchImageView;
 import com.kenanpulak.gridimagesearch.models.ImageResult;
 import com.squareup.picasso.Picasso;
 
@@ -21,7 +21,7 @@ public class ImageDisplayActivity extends Activity {
         // Pull out the url from the intent
         ImageResult result = (ImageResult) getIntent().getSerializableExtra("result");
         // Find the image view
-        ImageView ivImageResult = (ImageView) findViewById(R.id.ivImageResult);
+        TouchImageView ivImageResult = (TouchImageView) findViewById(R.id.ivImageResult);
         // Load the image url into the imageview using picasso
         Picasso.with(this).load(result.fullURL).into(ivImageResult);
     }

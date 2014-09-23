@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.kenanpulak.gridimagesearch.activities.ImageDisplayActivity">
 
-    <ImageView
+    <com.kenanpulak.gridimagesearch.TouchImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:maxWidth="600dp"
