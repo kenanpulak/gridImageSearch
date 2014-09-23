@@ -1,5 +1,6 @@
 package com.kenanpulak.gridimagesearch.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -7,11 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Toast;
 
+import com.kenanpulak.gridimagesearch.EndlessScrollListener;
 import com.kenanpulak.gridimagesearch.FilterFragment;
 import com.kenanpulak.gridimagesearch.FilterFragment.FilterDialogListener;
 import com.kenanpulak.gridimagesearch.R;
@@ -27,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
 
 public class SearchActivity extends FragmentActivity implements FilterDialogListener{
 
@@ -51,6 +52,62 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
         aImageResults = new ImageResultsAdapter(this,imageResults);
         // Link the adapter to the adapterView (gridView)
         gvResults.setAdapter(aImageResults);
+
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                customLoadMoreDataFromApi(totalItemsCount);
+                // or customLoadMoreDataFromApi(totalItemsCount);
+            }
+        });
+    }
+
+    // Append more data into the adapter
+    public void customLoadMoreDataFromApi(int offset) {
+        // This method probably sends out a network request and appends new data items to your adapter.
+        // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
+        // Deserialize API response and then construct new objects to append to the adapter
+        String query = etQuery.getText().toString();
+        AsyncHttpClient client = new AsyncHttpClient();
+        String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ query +"&rsz=8" + "&start=" + offset;
+
+        StringBuilder s = new StringBuilder(100);
+        s.append(searchURL);
+        if (searchFilter.size != null){
+            s.append("&imgsz=");
+            s.append(searchFilter.size);
+        }
+        if (searchFilter.color != null){
+            s.append("&imgcolor=");
+            s.append(searchFilter.color);
+        }
+        if (searchFilter.type != null){
+            s.append("&imgtype=");
+            s.append(searchFilter.type);
+        }
+        if (searchFilter.site != null){
+            s.append("&as_sitesearch=");
+            s.append(searchFilter.site);
+        }
+
+        client.get(s.toString(), new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers,JSONObject response){
+
+                JSONArray imageResultsJson = null;
+                try {
+                    imageResultsJson = response.getJSONObject("responseData").getJSONArray("results");
+                    //imageResults.clear(); // clear the existing images from the array when theres a new search
+                    aImageResults.addAll(ImageResult.fromJSONArray(imageResultsJson));
+
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void setupViews(){
@@ -92,13 +149,6 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
     }
 
     public void onFilterAction(MenuItem mi) {
-       /* // Create the intent
-        Intent i = new Intent(this,CreationActivity.class);
-        // Define the parameters (extras)
-        i.putExtra(DEFAULT_DOLLAR_EXTRA, 50);
-        i.putExtra(DEFAULT_NOTE_EXTRA, "Food");
-        //Execute my intent
-        startActivityForResult(i, 50);*/
         showFilterFragment();
     }
 
@@ -113,9 +163,16 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
 
     // Fired whenever the button is pressed
     public void onImageSearch(View v){
+
+        aImageResults.clear();
+
         String query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
         String searchURL = "https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q="+ query +"&rsz=8";
+
+        InputMethodManager imm = (InputMethodManager)getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(etQuery.getWindowToken(), 0);
 
         StringBuilder s = new StringBuilder(100);
         s.append(searchURL);
@@ -149,6 +206,9 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
                 catch (JSONException e){
                     e.printStackTrace();
                 }
+                if(aImageResults.getCount() <= 8){
+                    //customLoadMoreDataFromApi(8);
+                }
             }
         });
     }
@@ -157,7 +217,5 @@ public class SearchActivity extends FragmentActivity implements FilterDialogList
     public void onFinishFilterDialog(Filter filter)
     {
         searchFilter = filter;
-        Toast.makeText(this, searchFilter.size + " " + searchFilter.color + " " + searchFilter.type + " " + searchFilter.site, Toast.LENGTH_SHORT).show();
     }
-
 }
